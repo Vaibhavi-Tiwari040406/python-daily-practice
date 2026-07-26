@@ -1,119 +1,106 @@
 # %% [markdown]
-# # 🐍 NumPy Revision & Quick Reference Guide
-# **Topic:** Core NumPy Operations for Data Science & Computing  
-# **Format:** Revision Notes + Executable Code  
+# # 🐍 NumPy Core Concepts & Revision Guide
+# **Topics Covered:** Vectorized Operations, Broadcasting Rules, Aggregations, Axis Operations, and Boolean Masking Logic.
 
 # ---
 
 # %% [markdown]
-# ## 1. Fundamentals & Array Creation
-# * NumPy arrays (`ndarray`) are homogeneous, N-dimensional, and memory-efficient compared to Python lists.
+# ## 1. Vectorized Operations & Element-Wise Math
+# Vectorization applies operations to entire arrays at once without explicit loops.
 
 # %%
 import numpy as np
 
-# Creating 1D and 2D arrays
-arr_1d = np.array([1, 2, 3, 4, 5])
-arr_2d = np.array([[1, 2, 3], [4, 5, 6]])
+array = np.array([1.1, 2.2, 3.3, 4.4])
 
-# Built-in initializers
-zeros = np.zeros((2, 3))        # 2x3 matrix of 0s
-ones = np.ones((3, 3))          # 3x3 matrix of 1s
-identity = np.eye(3)            # 3x3 Identity matrix
-ranged = np.arange(0, 10, 2)    # Start, Stop (exclusive), Step -> [0, 2, 4, 6, 8]
-linear_space = np.linspace(0, 1, 5) # 5 evenly spaced numbers from 0 to 1
+# Basic Universal Functions (ufuncs)
+print("Original Array: ", array)
+print("Square Root:    ", np.sqrt(array))
+print("Power / Square: ", np.square(array))
+print("Addition:       ", np.add(array, array))
+print("Subtraction:    ", np.subtract(array, array))
+print("Multiplication: ", np.multiply(array, array))
+print("Division:       ", np.divide(array, array))
+print("Modulus:        ", np.mod(array, array))
 
-print("1D Shape:", arr_1d.shape)
-print("2D Shape & Data Type:", arr_2d.shape, "|", arr_2d.dtype)
+# Rounding & Trigonometry
+print("\n--- Rounding & Trig ---")
+print("Round: ", np.round(array))
+print("Floor: ", np.floor(array))
+print("Ceil:  ", np.ceil(array))
+print("Sin:   ", np.sin(array))
+print("Sinh:  ", np.sinh(array))
 
-# %% [markdown]
-# ## 2. Array Attributes & Reshaping
-# * **Key Rule:** Reshaping requires the total number of elements to remain constant ($N_{\text{old}} = N_{\text{new}}$).
-
-# %%
-arr = np.arange(12) # [0, 1, ..., 11]
-
-# Reshaping 1D -> 3x4 Matrix
-matrix_3x4 = arr.reshape(3, 4)
-
-# Flattening back to 1D
-flattened = matrix_3x4.flatten()
-
-# Transpose
-transposed = matrix_3x4.T
-
-print("Reshaped (3x4):\n", matrix_3x4)
-print("\nTransposed (4x3):\n", transposed)
+# Geometric calculations using constants
+pi = np.pi
+radii = np.array([1, 2, 3, 4])
+areas = pi * (radii ** 2)
+print("\nCircle Areas:", areas)
 
 # %% [markdown]
-# ## 3. Indexing, Slicing & Boolean Masking
-# * NumPy uses zero-based indexing and supports multi-dimensional slicing `[row_slice, col_slice]`.
-# * **Boolean Masking** is essential for filtering data based on conditions.
+# ## 2. Broadcasting Rules & Array Shapes
+# Broadcasting stretches smaller arrays across larger arrays without copying data.
+# * **Rule:** Two dimensions are compatible if they are equal OR if one of them is `1`.
 
 # %%
-data = np.array([10, 20, 30, 40, 50, 60])
+array1 = np.array([[1, 2, 3, 4]])  # Shape: (1, 4) -> Row Vector
+array2 = np.array([[5], [6], [7], [8]])  # Shape: (4, 1) -> Column Vector
 
-# Basic Slicing [start:stop:step]
-subset = data[1:4] # [20, 30, 40]
+print("Shape of array1:", array1.shape)
+print("Shape of array2:", array2.shape)
 
-# Filtering / Boolean Masking
-mask = data > 30
-filtered_data = data[mask] # Elements greater than 30
-
-print("Filtered (>30):", filtered_data)
-
-# Modifying elements conditionally
-data[data < 30] = 0
-print("Modified Array:", data)
+# Broadcasting Result Shape: (4, 4)
+broadcast_result = array1 * array2
+print("\nBroadcasting Result (Outer Product Grid):\n", broadcast_result)
 
 # %% [markdown]
-# ## 4. Vectorized Operations & Broadcasting
-# * **Vectorization:** Operations occur element-wise without explicit `for` loops.
-# * **Broadcasting:** Allows arithmetic operations between arrays of different shapes under specific compatibility rules.
+# ## 3. Aggregations & Axis Operations
+# Summary statistics across the entire array or specific axes.
+# * `axis=0`: Operations down columns (vertical)
+# * `axis=1`: Operations across rows (horizontal)
 
 # %%
-a = np.array([1, 2, 3])
-b = np.array([10, 20, 30])
+grid = np.array([
+    [1, 2, 3, 4],
+    [5, 6, 7, 8],
+    [9, 10, 11, 12]
+])
 
-# Element-wise operations
-add = a + b
-square = a ** 2
+print("Total Sum:", np.sum(grid))
+print("Mean:     ", np.mean(grid))
+print("Variance: ", np.var(grid))      # Var = Σ(x - μ)² / N
+print("Std Dev:  ", np.std(grid))      # Std = √Variance
+print("Max Value:", np.max(grid))
+print("Min Value:", np.min(grid))
 
-# Broadcasting example (1D array + Scalar)
-scaled = a * 10 
+# Argmin / Argmax return the flattened index of min/max values
+print("\nIndex of Min (Argmin):", np.argmin(grid)) # Index 0 -> value 1
+print("Index of Max (Argmax):", np.argmax(grid)) # Index 11 -> value 12
 
-print("Element-wise Addition:", add)
-print("Scaled Array:", scaled)
+# Axis-based Aggregations
+print("\nColumn-wise Sum (axis=0):", np.sum(grid, axis=0)) # [1+5+9, 2+6+10, ...]
+print("Row-wise Sum    (axis=1):", np.sum(grid, axis=1)) # [1+2+3+4, ...]
 
 # %% [markdown]
-# ## 5. Aggregations & Axis Operations
-# * Aggregations compress arrays along specified axes:
-#   * `axis=0`: Operations down the columns.
-#   * `axis=1`: Operations across the rows.
+# ## 4. Application: Boolean Masking & Leap Year Calculator
+# Using vectorized conditionals `&` (AND), `|` (OR) to filter data without `if` statements.
 
 # %%
-matrix = np.array([[1, 2, 3], 
-                   [4, 5, 6]])
+ages = np.array([22, 34, 12, 45, 35, 88, 2, 20, 55, 67, 1026])
+current_year = 2026
 
-total_sum = np.sum(matrix)
-col_sum = np.sum(matrix, axis=0)  # [1+4, 2+5, 3+6] -> [5, 7, 9]
-row_sum = np.sum(matrix, axis=1)  # [1+2+3, 4+5+6] -> [6, 15]
+# Vectorized birth year calculation
+birth_years = current_year - ages
 
-mean_val = np.mean(matrix)
-std_dev = np.std(matrix)
+# Leap Year Condition: (divisible by 4 AND NOT by 100) OR (divisible by 400)
+is_leap_year = (birth_years % 4 == 0) & ((birth_years % 100 != 0) | (birth_years % 400 == 0))
 
-print(f"Column Sums: {col_sum} | Row Sums: {row_sum}")
-print(f"Mean: {mean_val:.2f} | Standard Dev: {std_dev:.2f}")
+# Boolean Masking to filter arrays
+leap_year_ages = ages[is_leap_year]
+leap_birth_years = birth_years[is_leap_year]
 
-# %% [markdown]
-# ## 6. Random Sampling & Statistics
-# * Useful for generating synthetic data, initializing weights, or sampling.
-
-# %%
-np.random.seed(42) # Reproducibility
-
-rand_uniform = np.random.rand(3)      # Uniform distribution [0, 1)
-rand_normal = np.random.randn(3)     # Standard Normal distribution (mean=0, std=1)
-rand_integers = np.random.randint(1, 100, size=(2, 2)) # Random integers
-
-print("Random Integers Matrix:\n", rand_integers)
+print("Original Ages:      ", ages)
+print("Calculated Births:  ", birth_years)
+print("\n--- Filtered Leap Year Results ---")
+print("Birth Years: ", leap_birth_years)
+print("Ages:        ", leap_year_ages)
